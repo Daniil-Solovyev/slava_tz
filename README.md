@@ -9,7 +9,7 @@
 
 В директории SRC:
 - копировать .env.example в .env <br>
-- php artisan migrate --seed
+- docker exec -it <container_name> php artisan migrate --seed
 
 **URLs**: <br>
 http://localhost:8080/upload - загрузка файла <br>
