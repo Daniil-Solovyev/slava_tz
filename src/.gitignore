@@ -1,0 +1,10 @@
+/.phpunit.cache
+/node_modules
+/public/build
+/public/storage
+/storage/*.key
+/vendor
+.env
+/.fleet
+/.idea
+/.vscode
