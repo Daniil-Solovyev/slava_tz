@@ -9,6 +9,7 @@ RUN useradd -ms /bin/bash dws
 # Устанавливаем зависимости и расширения
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y \
+        redis-server \
         git \
         libzip-dev \
         zip \
@@ -22,9 +23,11 @@ RUN apt-get update && apt-get upgrade -y && \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd
 
+# Устанавливаем расширение Redis
+RUN pecl install redis && docker-php-ext-enable redis
+
 # Устанавливаем Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Переключаемся на пользователя dws
 USER dws
-

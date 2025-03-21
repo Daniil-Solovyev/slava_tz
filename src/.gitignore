@@ -8,3 +8,4 @@
 /.fleet
 /.idea
 /.vscode
+.phpunit.result.cache

@@ -17,23 +17,31 @@ services:
       - /etc/group:/etc/group:ro
     user: ${MY_UID}:${MY_GID}
     environment:
-      - QUEUE_CONNECTION=beanstalkd
+      - QUEUE_CONNECTION=redis
       - MY_UID=${MY_UID}
       - MY_GID=${MY_GID}
+    networks:
+      - default
+    depends_on:
+      - redis
 
   queue-worker:
     build:
       context: .
       dockerfile: dockerfiles/php.Dockerfile
-    command: ["php", "/var/www/laravel/artisan", "queue:listen"]
+    command: ["php", "/var/www/laravel/artisan", "queue:listen", "--timeout=180"]
     volumes:
       - ./src:/var/www/laravel
     restart: unless-stopped
+    depends_on:
+      - redis
 
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
+    networks:
+      - default
 
 networks:
   default:
