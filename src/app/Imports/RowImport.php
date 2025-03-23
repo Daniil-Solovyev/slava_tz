@@ -29,7 +29,11 @@ class RowImport implements ToArray, WithChunkReading
     private $error_logger;
     private $progress_key;
 
-    public function __construct(RowValidator $row_validator, RowSaver $row_saver, ErrorLogger $error_logger, string $progress_key)
+    public function __construct(
+        RowValidator $row_validator,
+        RowSaver     $row_saver, ErrorLogger $error_logger,
+        string       $progress_key
+    )
     {
         $this->row_validator = $row_validator;
         $this->row_saver = $row_saver;
@@ -37,6 +41,10 @@ class RowImport implements ToArray, WithChunkReading
         $this->progress_key = $progress_key;
     }
 
+    /**
+     * @param array $rows
+     * @return void
+     */
     public function array(array $rows): void
     {
         unset($rows[0]);
@@ -48,8 +56,14 @@ class RowImport implements ToArray, WithChunkReading
         $this->error_logger->writeErrorsToFile();
     }
 
+    /**
+     * @param array $row
+     * @param int $row_number
+     * @return void
+     */
     private function processRow(array $row, int $row_number): void
     {
+        // Счетчик обработанных строк
         Redis::set($this->progress_key, $this->row_number - 2);
 
         $data = [

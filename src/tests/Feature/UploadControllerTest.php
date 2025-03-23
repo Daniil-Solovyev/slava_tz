@@ -32,7 +32,7 @@ class UploadControllerTest extends TestCase
     }
 
     /** @test */
-    public function test_upload_file_dispatches_job_and_redirects_with_success()
+    public function upload_file_dispatches_job_and_redirects_with_success()
     {
         $this->withBasicAuth('test@example.com', 'password');
 

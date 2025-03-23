@@ -14,15 +14,23 @@ class RowSaver
         $this->loadExistingIds();
     }
 
+    /**
+     * @return void
+     */
     private function loadExistingIds(): void
     {
         $this->unique_ids = Row::pluck('row_id')->toArray();
     }
 
+    /**
+     * @param array $data
+     * @return bool
+     */
     public function saveRow(array $data): bool
     {
+        // Проверка на дубли
         if (in_array($data['id'], $this->unique_ids)) {
-            return false; // Дубликат
+            return false;
         }
 
         Row::create([

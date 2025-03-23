@@ -7,6 +7,10 @@ use App\Http\Requests\ExcelParseRequest;
 
 class RowValidator
 {
+    /**
+     * @param array $data
+     * @return array
+     */
     public function validate(array $data): array
     {
         $validator = Validator::make($data, (new ExcelParseRequest())->rules(), (new ExcelParseRequest())->messages());

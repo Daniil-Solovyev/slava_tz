@@ -11,6 +11,7 @@ services:
     build:
       context: dockerfiles
       dockerfile: php.Dockerfile
+    container_name: slava_tz_php_container
     volumes:
       - ./src:/var/www/laravel
       - /etc/passwd:/etc/passwd:ro

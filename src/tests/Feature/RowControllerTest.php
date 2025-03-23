@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Row;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class RowControllerTest extends TestCase
@@ -29,21 +30,21 @@ class RowControllerTest extends TestCase
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
-            '2025-04-20' => [['id', 'row_id', 'name']],
-            '2025-07-26' => [['id', 'row_id', 'name']],
-            '2025-12-18' => [['id', 'row_id', 'name']],
+            '2025-04-20' => [['id', 'name', 'date']],
+            '2025-07-26' => [['id', 'name', 'date']],
+            '2025-12-18' => [['id', 'name', 'date']],
         ]);
 
         $response->assertJson([
             '2025-04-20' => [
-                ['id' => $row1->id, 'row_id' => $row1->row_id, 'name' => $row1->name],
+                ['id' => $row1->id, 'name' => $row1->name, 'date' => $row1->date],
             ],
             '2025-07-26' => [
-                ['id' => $row2->id, 'row_id' => $row2->row_id, 'name' => $row2->name],
+                ['id' => $row2->id, 'name' => $row2->name, 'date' => $row2->date],
             ],
             '2025-12-18' => [
-                ['id' => $row3->id, 'row_id' => $row3->row_id, 'name' => $row3->name],
-                ['id' => $row4->id, 'row_id' => $row4->row_id, 'name' => $row4->name],
+                ['id' => $row3->id, 'name' => $row3->name, 'date' => $row3->date],
+                ['id' => $row4->id, 'name' => $row4->name, 'date' => $row4->date],
             ],
         ]);
     }
@@ -56,5 +57,24 @@ class RowControllerTest extends TestCase
         $response->assertStatus(200);
 
         $response->assertJson([]);
+    }
+
+    /** @test */
+    public function it_returns_progress_from_redis()
+    {
+        $progress_key = 'parsing_progress:test-key';
+        Redis::set($progress_key, 50);
+
+        $response = $this->getJson('/get-progress?key=' . $progress_key);
+
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure([
+            'progress',
+        ]);
+
+        $response->assertJson([
+            'progress' => 50,
+        ]);
     }
 }

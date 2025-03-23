@@ -20,10 +20,16 @@ class ProcessExcelFile implements ShouldQueue
     use Queueable, SerializesModels, Dispatchable;
 
     public function __construct(
-        public string $file_path,
+        public string  $file_path,
         private string $progress_key
-    ) {}
+    )
+    {
+    }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function handle(): void
     {
         try {
@@ -36,7 +42,6 @@ class ProcessExcelFile implements ShouldQueue
             Excel::import(new RowImport($row_validator, $row_saver, $error_logger, $this->progress_key), $this->file_path);
         } catch (Exception $e) {
             Log::error('Ошибка в ProcessExcelFile: ' . $e->getMessage());
-            throw $e;
         }
     }
 }

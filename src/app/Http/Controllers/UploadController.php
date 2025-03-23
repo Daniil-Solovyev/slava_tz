@@ -9,11 +9,18 @@ use Illuminate\Support\Facades\Storage;
 
 class UploadController extends Controller
 {
+    /**
+     * @return \Illuminate\View\View
+     */
     public function showForm()
     {
         return view('upload');
     }
 
+    /**
+     * @param \App\Http\Requests\UploadRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function upload(UploadRequest $request)
     {
         $file = $request->file('file');

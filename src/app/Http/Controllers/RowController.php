@@ -2,26 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Row;
 use Illuminate\Http\Request;
-use App\Http\Resources\RowResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 class RowController extends Controller
 {
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
-        $rows = Row::orderBy('date')->get();
+        $rows = DB::table('rows')
+            ->select('id', 'name', 'date')
+            ->orderBy('date')
+            ->get()
+            ->groupBy('date');
 
-        $grouped_rows = $rows->groupBy('date');
-
-        $result = $grouped_rows->map(function ($rows) {
-            return RowResource::collection($rows);
-        });
-
-        return response()->json($result);
+        return response()->json($rows);
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getProgress(Request $request)
     {
         $progress_key = $request->input('key');
