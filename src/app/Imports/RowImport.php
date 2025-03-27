@@ -7,11 +7,13 @@ use App\Services\RowValidator;
 use App\Services\ErrorLogger;
 use Illuminate\Support\Facades\Redis;
 use Maatwebsite\Excel\Concerns\ToArray;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 
-class RowImport implements ToArray, WithChunkReading
+class RowImport implements ToArray, WithChunkReading, WithStartRow
 {
     const CHUNK_SIZE = 1000;
+    const START_ROW = 2; // Старт со 2, так как заголовки пропущены
 
     public function chunkSize(): int
     {
@@ -23,7 +25,12 @@ class RowImport implements ToArray, WithChunkReading
         return 1000;
     }
 
-    private $row_number = 2; // Старт со 2, так как заголовки пропущены
+    public function startRow(): int
+    {
+        return self::START_ROW;
+    }
+
+    private $row_number = self::START_ROW;
     private $row_validator;
     private $row_saver;
     private $error_logger;
@@ -47,8 +54,6 @@ class RowImport implements ToArray, WithChunkReading
      */
     public function array(array $rows): void
     {
-        unset($rows[0]);
-
         foreach ($rows as $row) {
             $this->processRow($row, $this->row_number++);
         }
@@ -64,7 +69,7 @@ class RowImport implements ToArray, WithChunkReading
     private function processRow(array $row, int $row_number): void
     {
         // Счетчик обработанных строк
-        Redis::set($this->progress_key, $this->row_number - 2);
+        Redis::incr($this->progress_key);
 
         $data = [
             'id' => $row[0] ?? null,
